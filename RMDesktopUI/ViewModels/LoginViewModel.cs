@@ -43,6 +43,30 @@ namespace RMDesktopUI.ViewModels
             }
         }
 
+        public bool IsErrorVisible
+        {
+            get 
+            {
+                return ErrorMessage?.Length > 0 ? true : false;
+            }
+            
+        }
+
+        private string _errorMessage;
+
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            set
+            {
+                _errorMessage = value;
+                NotifyOfPropertyChange(() => IsErrorVisible);
+                NotifyOfPropertyChange(() => ErrorMessage);
+            }
+        }
+
+
+
         public bool CanLogIn
         {
             get
@@ -61,11 +85,12 @@ namespace RMDesktopUI.ViewModels
             // When user hits login, this is fired, we pass the username and password to the authenticate method of apihelper
             try
             {
+                ErrorMessage = "";
                 var result = await _apiHelper.Authenticate(UserName, Password); //the result with be a Model - AuthenticateUser Model
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                ErrorMessage = ex.Message;
             }
         }
 
