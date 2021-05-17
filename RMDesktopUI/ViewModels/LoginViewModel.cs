@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using RMDesktopUI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,12 @@ namespace RMDesktopUI.ViewModels
         // its sole purpose is to supply & hold values for this public property
         private string _userName;
         private string _password;
+        private IAPIHelper _apiHelper;
+
+        public LoginViewModel(IAPIHelper apiHelper)
+        {
+            _apiHelper = apiHelper;
+        }
 
         public string UserName
         {
@@ -49,9 +56,17 @@ namespace RMDesktopUI.ViewModels
             }
         }
 
-        public void LogIn()
+        public async Task LogIn()
         {
-            Console.WriteLine();
+            // When user hits login, this is fired, we pass the username and password to the authenticate method of apihelper
+            try
+            {
+                var result = await _apiHelper.Authenticate(UserName, Password); //the result with be a Model - AuthenticateUser Model
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
     }

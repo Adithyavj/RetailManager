@@ -31,7 +31,8 @@ namespace RMDesktopUI
 
             _container
                 .Singleton<IWindowManager, WindowManager>()
-                .Singleton<IEventAggregator, EventAggregator>(); //Singleton has only one instance for the entire life of the application
+                .Singleton<IEventAggregator, EventAggregator>()
+                .Singleton<IAPIHelper, APIHelper>(); //Singleton has only one instance for the entire life of the application
                                                                  //Interface,Implementation
 
             //Connect ViewModels to Views (we use Reflection to do this GetType()
