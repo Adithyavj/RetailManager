@@ -1,5 +1,7 @@
 ﻿using Caliburn.Micro;
 using RMDesktopUI.Helpers;
+using RMDesktopUI.Library.Api;
+using RMDesktopUI.Library.Models;
 using RMDesktopUI.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -32,11 +34,12 @@ namespace RMDesktopUI
             _container
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
-                .Singleton<IAPIHelper, APIHelper>(); //Singleton has only one instance for the entire life of the application
-                                                                 //Interface,Implementation
+                .Singleton<ILoggedInUserModel, LoggedInUserModel>()
+                .Singleton<IAPIHelper, APIHelper>(); // Singleton has only one instance for the entire life of the application
+                                                     // Interface, Implementation
 
-            //Connect ViewModels to Views (we use Reflection to do this GetType()
-            //Get all Types which is a class and endswith ViewModel and register them using container
+            // Connect ViewModels to Views (we use Reflection to do this GetType()
+            // Get all Types which is a class and endswith ViewModel and register them using container
             GetType().Assembly.GetTypes()
                 .Where(type => type.IsClass)
                 .Where(type => type.Name.EndsWith("ViewModel"))

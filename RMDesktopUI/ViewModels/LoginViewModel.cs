@@ -1,5 +1,5 @@
 ﻿using Caliburn.Micro;
-using RMDesktopUI.Helpers;
+using RMDesktopUI.Library.Api;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +16,8 @@ namespace RMDesktopUI.ViewModels
         private string _password;
         private IAPIHelper _apiHelper;
 
+        // We use constructor here to use dependency injection (only one instance of a class is created using interface
+        // ie, we don't user class c1= new class here..
         public LoginViewModel(IAPIHelper apiHelper)
         {
             _apiHelper = apiHelper;
@@ -65,8 +67,6 @@ namespace RMDesktopUI.ViewModels
             }
         }
 
-
-
         public bool CanLogIn
         {
             get
@@ -87,6 +87,10 @@ namespace RMDesktopUI.ViewModels
             {
                 ErrorMessage = "";
                 var result = await _apiHelper.Authenticate(UserName, Password); //the result with be a Model - AuthenticateUser Model
+
+                // Capture more information about the user from DB using the Authentication token
+                // we pass the accesstoken we got to this method to get detailed info of user
+                await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
             }
             catch (Exception ex)
             {

@@ -13,12 +13,14 @@ namespace RMDataManager.Controllers
     public class UserController : ApiController
     {
         // GET api/values/5
-        public List<UserModel> GetById()
+        [HttpGet]
+        public UserModel GetById()
         {
             // Gets the userid of the logged in person.
             string userId = RequestContext.Principal.Identity.GetUserId();
             UserData data = new UserData();
-            return data.GetUserById(userId);            
+
+            return data.GetUserById(userId).First();            
         }
     }
 }
