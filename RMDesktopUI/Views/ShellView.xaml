@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RMDesktopUI.Views"
         mc:Ignorable="d" FontSize="18"
-        Title="ShellView" Height="450" Width="800">
+        Title="ShellView" Height="600" Width="1000">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File" FontSize="18">
@@ -17,7 +17,7 @@
 
         </Menu>
         <Grid>
-            <ContentControl x:Name="ActiveItem" Margin="5"/>
+            <ContentControl x:Name="ActiveItem" Margin="20 5 20 20"/>
         </Grid>
     </DockPanel>
 </Window>

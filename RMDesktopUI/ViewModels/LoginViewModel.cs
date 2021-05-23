@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using RMDesktopUI.EventModels;
 using RMDesktopUI.Library.Api;
 using System;
 using System.Collections.Generic;
@@ -14,13 +15,17 @@ namespace RMDesktopUI.ViewModels
         // its sole purpose is to supply & hold values for this public property
         private string _userName;
         private string _password;
+        // instance of apihelper interface
         private IAPIHelper _apiHelper;
+        // instance of event aggergator
+        private IEventAggregator _events;
 
         // We use constructor here to use dependency injection (only one instance of a class is created using interface
         // ie, we don't user class c1= new class here..
-        public LoginViewModel(IAPIHelper apiHelper)
+        public LoginViewModel(IAPIHelper apiHelper, IEventAggregator events)
         {
             _apiHelper = apiHelper;
+            _events = events;
         }
 
         public string UserName
@@ -91,6 +96,13 @@ namespace RMDesktopUI.ViewModels
                 // Capture more information about the user from DB using the Authentication token
                 // we pass the accesstoken we got to this method to get detailed info of user
                 await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
+
+                // This lets everyone know someone has logged in
+                // all listeners on the UI thread will know that this event fires
+                // We created a Class (EventModel) for this just to know the event occured. The eventModel won't have any code
+                _events.PublishOnUIThread(new LogOnEvent()); //broadcast.... LogOnEvent Happends
+
+
             }
             catch (Exception ex)
             {

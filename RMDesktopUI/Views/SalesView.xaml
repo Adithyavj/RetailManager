@@ -28,7 +28,7 @@
 
         
         <!-- Header -->
-        <TextBox Text="Sales Page" FontSize="48" Grid.Row="0" 
+        <TextBlock Text="Sales Page" FontSize="48" Grid.Row="0" 
                  Grid.Column="0" Grid.ColumnSpan="3" Margin="0 0 0 20"/>
 
         <!-- Column 0 for Products -->
