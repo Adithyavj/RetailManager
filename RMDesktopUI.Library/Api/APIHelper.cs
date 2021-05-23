@@ -69,7 +69,7 @@ namespace RMDesktopUI.Library.Api
             ApiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json")); // Add values in DefaultRequestHeaders
             ApiClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}"); // add the token as header to every request (to show we are authorized)
 
-            using(HttpResponseMessage response =await ApiClient.GetAsync("/api/User"))
+            using(HttpResponseMessage response = await ApiClient.GetAsync("/api/User"))
             {
                 if(response.IsSuccessStatusCode)
                 {
