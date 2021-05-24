@@ -1,4 +1,6 @@
 ﻿using Caliburn.Micro;
+using RMDesktopUI.Library.Api;
+using RMDesktopUI.Library.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,11 +12,33 @@ namespace RMDesktopUI.ViewModels
 {
     public class SalesViewModel : Screen
     {
+        IProductEndpoint _productEndpoint;
+
+        // Constructor which overloads productEndpoint
+        public SalesViewModel(IProductEndpoint productEndpoint)
+        {
+            _productEndpoint = productEndpoint;
+        }
+
+        protected override async void OnViewLoaded(object view)
+        {
+            base.OnViewLoaded(view);
+            await LoadProducts();
+        }
+
+        private async Task LoadProducts()
+        {
+            // Load Values from APIEnd point to UI when form loads
+            var productList = await _productEndpoint.GetAll();
+            Products = new BindingList<ProductModel>(productList);
+        }
+
+
         // Backing Fields
-        private BindingList<string> _products;
+        private BindingList<ProductModel> _products;
 
         // Properties
-        public BindingList<string> Products
+        public BindingList<ProductModel> Products
         {
             get { return _products; }
             set 

@@ -9,6 +9,7 @@ using System.Web.Http;
 
 namespace RMDataManager.Controllers
 {
+    // This attribute is added to check if the user is authorized..
     [Authorize]
     public class UserController : ApiController
     {

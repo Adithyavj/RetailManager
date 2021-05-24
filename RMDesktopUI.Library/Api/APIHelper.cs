@@ -14,7 +14,7 @@ namespace RMDesktopUI.Library.Api
 {
     public class APIHelper : IAPIHelper
     {
-        private HttpClient ApiClient;
+        private HttpClient _apiClient;
         private ILoggedInUserModel _loggedInUser;
 
         public APIHelper(ILoggedInUserModel loggedInUser)
@@ -23,15 +23,23 @@ namespace RMDesktopUI.Library.Api
             _loggedInUser = loggedInUser;
         }
 
+        public HttpClient ApiClient 
+        { 
+            get 
+            { 
+                return _apiClient; 
+            } 
+        }
+
         private void InitializeClient()
         {
             //Get value from app.config
             string api = ConfigurationManager.AppSettings["api"];
 
-            ApiClient = new HttpClient(); // HttpClient
-            ApiClient.BaseAddress = new Uri(api); // Base Address of our uri
-            ApiClient.DefaultRequestHeaders.Accept.Clear(); // Clear all values in DefaultRequestHeaders
-            ApiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json")); // Add values in DefaultRequestHeaders
+            _apiClient = new HttpClient(); // HttpClient
+            _apiClient.BaseAddress = new Uri(api); // Base Address of our uri
+            _apiClient.DefaultRequestHeaders.Accept.Clear(); // Clear all values in DefaultRequestHeaders
+            _apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json")); // Add values in DefaultRequestHeaders
         }
 
         // We return Task (which is essentially returning void for an async method...), here we return username,Accesstoken of authenticated user as task
@@ -46,7 +54,7 @@ namespace RMDesktopUI.Library.Api
                 new KeyValuePair<string,string>("password",password),
             });
 
-            using (HttpResponseMessage response = await ApiClient.PostAsync("/Token", data))
+            using (HttpResponseMessage response = await _apiClient.PostAsync("/Token", data))
             {
                 if (response.IsSuccessStatusCode)
                 {
@@ -64,12 +72,12 @@ namespace RMDesktopUI.Library.Api
         public async Task GetLoggedInUserInfo(string token)
         {
             // ApiClient is an instance of HttpClient - It has header,body (we can send requests using either
-            ApiClient.DefaultRequestHeaders.Clear();
-            ApiClient.DefaultRequestHeaders.Accept.Clear(); // Clear all values in DefaultRequestHeaders
-            ApiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json")); // Add values in DefaultRequestHeaders
-            ApiClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}"); // add the token as header to every request (to show we are authorized)
+            _apiClient.DefaultRequestHeaders.Clear();
+            _apiClient.DefaultRequestHeaders.Accept.Clear(); // Clear all values in DefaultRequestHeaders
+            _apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json")); // Add values in DefaultRequestHeaders
+            _apiClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}"); // add the token as header to every request (to show we are authorized)
 
-            using(HttpResponseMessage response = await ApiClient.GetAsync("/api/User"))
+            using(HttpResponseMessage response = await _apiClient.GetAsync("/api/User"))
             {
                 if(response.IsSuccessStatusCode)
                 {
@@ -78,6 +86,8 @@ namespace RMDesktopUI.Library.Api
 
                     // Now we manually map this result to _loggedinuser static class object so that it 
                     // can be accessed throughout the project
+
+                    // Now we need to map the API Model with the UI Model
                     _loggedInUser.Id = result.Id;
                     _loggedInUser.Token = token;
                     _loggedInUser.FirstName = result.FirstName;
