@@ -11,22 +11,19 @@ namespace RMDesktopUI.ViewModels
     public class ShellViewModel : Conductor<object>, IHandle<LogOnEvent>
     {
         private SalesViewModel _salesVM;
-        private SimpleContainer _container;
         private IEventAggregator _events;
 
-        public ShellViewModel(IEventAggregator events, SalesViewModel salesVM,
-            SimpleContainer container)
+        public ShellViewModel(IEventAggregator events, SalesViewModel salesVM)
         {
             // Constructor dependancy injection
             _events = events;
             _salesVM = salesVM;
-            _container = container;
 
             // Subscribes the shellviewModel to listen to the events
             _events.Subscribe(this);
 
             // Activate LoginViewModel (PopUp Login Screen)
-            ActivateItem(_container.GetInstance<LoginViewModel>());
+            ActivateItem(IoC.Get<LoginViewModel>());
         }
 
         // The ShellViewModel Listens for the LogOnEvent fired in the LoginViewModel.....
