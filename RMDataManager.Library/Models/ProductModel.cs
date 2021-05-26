@@ -15,9 +15,7 @@ namespace RMDataManager.Library.Models
         public string ProductName { get; set; }
         public string Description { get; set; }
         public decimal RetailPrice { get; set; }
-        /// <summary>
-        /// Current Stock Quantity of the Product
-        /// </summary>
         public int QuantityInStock { get; set; }
+        public bool IsTaxable { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿ using Caliburn.Micro;
 using RMDesktopUI.Helpers;
 using RMDesktopUI.Library.Api;
+using RMDesktopUI.Library.Helpers;
 using RMDesktopUI.Library.Models;
 using RMDesktopUI.ViewModels;
 using System;
@@ -36,6 +37,7 @@ namespace RMDesktopUI
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
                 .Singleton<ILoggedInUserModel, LoggedInUserModel>()
+                .Singleton<IConfigHelper, ConfigHelper>()
                 .Singleton<IAPIHelper, APIHelper>(); // Singleton has only one instance for the entire life of the application
                                                      // Interface, Implementation
 
