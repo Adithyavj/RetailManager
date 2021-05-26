@@ -104,6 +104,9 @@ namespace RMDesktopUI.ViewModels
         {
             decimal subTotal = 0;
 
+            //// Simplified LINQ of the below foreach loop
+            // subTotal = Cart.Sum(x => x.Product.RetailPrice * x.QuantityInCart);
+
             foreach (var item in Cart)
             {
                 subTotal += (item.Product.RetailPrice * item.QuantityInCart);
@@ -120,13 +123,18 @@ namespace RMDesktopUI.ViewModels
             // Method in ConfigHelper class in UILibrary Helpers to read taxRate from app.config
             decimal taxRate = _configHelper.GetTaxRate() / 100;
 
-            foreach (var item in Cart)
-            {
-                if (item.Product.IsTaxable)
-                {
-                    taxAmount += (item.Product.RetailPrice * item.QuantityInCart * taxRate);
-                }
-            }
+            // using LINQ to simplify the calculation
+            taxAmount = Cart // Take the cart
+                .Where(x => x.Product.IsTaxable) // lambda exprn to filter down products which are taxable
+                .Sum(x => x.Product.RetailPrice * x.QuantityInCart * taxRate); // do a sum on the resulting product
+
+            //foreach (var item in Cart)
+            //{
+            //    if (item.Product.IsTaxable)
+            //    {
+            //        taxAmount += (item.Product.RetailPrice * item.QuantityInCart * taxRate);
+            //    }
+            //}
 
             return taxAmount;
         }
