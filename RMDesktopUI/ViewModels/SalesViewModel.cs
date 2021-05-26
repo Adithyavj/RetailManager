@@ -48,9 +48,23 @@ namespace RMDesktopUI.ViewModels
             }
         }
 
-        private BindingList<string> _cart;
+        private ProductModel _selectedProduct;
 
-        public BindingList<string> Cart
+        public ProductModel SelectedProduct
+        {
+            get { return _selectedProduct; }
+            set 
+            { 
+                _selectedProduct = value;
+                NotifyOfPropertyChange(() => SelectedProduct);
+                NotifyOfPropertyChange(() => CanAddToCart);
+            }
+        }
+
+
+        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
+
+        public BindingList<CartItemModel> Cart
         {
             get { return _cart; }
             set 
@@ -60,7 +74,7 @@ namespace RMDesktopUI.ViewModels
             }
         }
 
-        private int _itemQuantity;
+        private int _itemQuantity = 1;
 
         public int ItemQuantity
         {
@@ -69,6 +83,8 @@ namespace RMDesktopUI.ViewModels
             { 
                 _itemQuantity = value;
                 NotifyOfPropertyChange(() => ItemQuantity);
+                // Notify this property that ItemQty was changed
+                NotifyOfPropertyChange(() => CanAddToCart);
             }
         }
 
@@ -76,8 +92,13 @@ namespace RMDesktopUI.ViewModels
         { 
             get 
             {
-                // TODO - replace with calculation
-                return "$0.00";
+                decimal subTotal = 0;
+
+                foreach (var item in Cart)
+                {
+                    subTotal += (item.Product.RetailPrice * item.QuantityInCart);
+                }
+                return subTotal.ToString("C"); // convert to string and format as currency
             }
         }
         public string Tax
@@ -105,7 +126,14 @@ namespace RMDesktopUI.ViewModels
 
                 // Make sure something is selected 
                 // Make sure there is an item quantity
-                
+
+                // Check if ItemQty is greater than 0 and
+                // Check if SelectedProduct is not null and if it's stock qty is greater than ItemQuantity(qty in textbox)
+                if (ItemQuantity > 0 && SelectedProduct?.QuantityInStock >= ItemQuantity)
+                {
+                    // Enable AddtoCart Button
+                    output = true;
+                }
                 return output;
             }
         }
@@ -113,7 +141,37 @@ namespace RMDesktopUI.ViewModels
         // Add to cart button
         public void AddToCart()
         {
+            // If Same item is added twice, we need to update same line by increment qty
+            CartItemModel existingItem = Cart.FirstOrDefault(x => x.Product == SelectedProduct);
+            if (existingItem != null)
+            {
+                // if item selected from ItemList already exists in cart, simply increament the qty in cart with ItemQuantity
+                existingItem.QuantityInCart += ItemQuantity;
+                // HACK - There should be a better way of refreshing the cart display
+                Cart.Remove(existingItem);
+                Cart.Add(existingItem);
+            }
+            else
+            {
+                // This occurs in case a new item is added.
+                // Take the selecteditem from the list and the qty from itemQty
+                // and add this item to the cart
+                // We use the CartItemModel to Hold the current values in SalesView
+                CartItemModel item = new CartItemModel
+                {
+                    Product = SelectedProduct,
+                    QuantityInCart = ItemQuantity
+                };
+                Cart.Add(item);
+            }
+            // When item is added to cart that amount of qty should be subtracted from StockQty
+            SelectedProduct.QuantityInStock -= ItemQuantity;
+            // Refreshing textbox qty
+            ItemQuantity = 1;
 
+            // Whenever items are added to cart we have to calculate subtotal
+            NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Cart);
         }
 
         public bool CanRemoveFromCart
@@ -131,7 +189,7 @@ namespace RMDesktopUI.ViewModels
         // Remove From Cart button
         public void RemoveFromCart()
         {
-
+            NotifyOfPropertyChange(() => SubTotal);
         }
 
         public bool CanCheckOut
