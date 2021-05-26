@@ -18,10 +18,12 @@ namespace RMDataManager.Models
         }
     }
 
+    // Sets up to talk to the DB
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        // Name of connection string to EntityFramework DB
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("EFData", throwIfV1Schema: false)
         {
         }
         
