@@ -14,7 +14,7 @@ namespace RMDataManager.Library.Internal.DataAccess
     /// <summary>
     /// An Internal Class containing methods to load,save data from Database server
     /// </summary>
-    internal class SqlDataAccess
+    internal class SqlDataAccess : IDisposable
     {
         public string GetConnectionString(string name)
         {
@@ -47,5 +47,60 @@ namespace RMDataManager.Library.Internal.DataAccess
                     commandType: CommandType.StoredProcedure);
             }
         }
+
+        #region SQL Transactions in C#
+        private IDbConnection _connection;
+        private IDbTransaction _transaction;
+
+        public void StartTransaction(string connectionStringName)
+        {
+            string connectionString = GetConnectionString(connectionStringName);
+
+            _connection = new SqlConnection(connectionString);
+
+            _connection.Open();
+
+            _transaction = _connection.BeginTransaction();
+        }
+
+        // Load Data in Transaction , we pass transaction in Query
+        public List<T> LoadDataInTransaction<T, U>(string storedProcedure, U parameters)
+        {
+            List<T> rows = _connection.Query<T>(storedProcedure, parameters,
+                commandType: CommandType.StoredProcedure, transaction: _transaction).ToList();
+            return rows;
+        }
+
+        // Save Data in Transaction , we pass transaction in Execute method
+        public void SaveDataInTransaction<T>(string storedProcedure, T parameters)
+        {
+            _connection.Execute(storedProcedure, parameters,
+                commandType: CommandType.StoredProcedure, transaction: _transaction);
+        }
+
+        // Commits transactions upon successful completion
+        public void CommitTransaction()
+        {
+            _transaction?.Commit();
+            _connection?.Close();
+        }
+
+        // Rollbacks all transactions as error occured
+        public void RollBackTransaction()
+        {
+            _transaction?.Rollback();
+            _connection?.Close();
+        }
+
+        public void Dispose()
+        {
+            CommitTransaction();
+        }
+        // Open connection/start transaction method
+        // load using the transaction
+        // save using the transaction
+        // close connection/stop transaction method
+        // implement dispose
+        #endregion
     }
 }

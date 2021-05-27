@@ -57,20 +57,39 @@ namespace RMDataManager.Library.DataAccess
 
             sale.Total = sale.SubTotal + sale.Tax;
 
-            // save the sale model
-            SqlDataAccess sql = new SqlDataAccess();
-            sql.SaveData("dbo.spSale_Insert", sale, "RMData");
-
-            // get the ID from db using Sale_Lookup sp
-            sale.Id = sql.LoadData<int, dynamic>("dbo.spSale_Lookup", new { sale.CashierId, sale.SaleDate }, "RMData").FirstOrDefault();
-
-            // Finish filling in the sale Detail Models with the id we now obtained
-            foreach (var item in details)
+            // Complete whole insertion to Sale, SaleDetail and lookup SaleId in a single transaction
+            // using sql transaction in C#
+            using (SqlDataAccess sql = new SqlDataAccess())
             {
-                item.SaleId = sale.Id;
+                try
+                {
+                    // Start transaction
+                    sql.StartTransaction("RMData");
 
-                // save the sales Detail Model to DB one by one
-                sql.SaveData("dbo.spSaleDetail_Insert", item, "RMData");
+                    // save the sale model
+                    sql.SaveDataInTransaction("dbo.spSale_Insert", sale);
+
+                    // get the ID from db using Sale_Lookup sp
+                    sale.Id = sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_Lookup", new { sale.CashierId, sale.SaleDate }).FirstOrDefault();
+
+                    // Finish filling in the sale Detail Models with the id we now obtained and insert to SaleDetail table one by one
+                    foreach (var item in details)
+                    {
+                        item.SaleId = sale.Id;
+                        // save the sales Detail Model to DB one by one
+                        sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
+                    }
+
+                    // In case the whole thing completes without any exception, it commits the transaction
+                    // because we wrote committransaction in the Dispose() no need to call it here
+                    // it will be automatically done
+                }
+                catch
+                {
+                    // If any error occurs roll back the whole transaction
+                    sql.RollBackTransaction();
+                    throw;
+                }
             }
         }
     }
