@@ -68,6 +68,12 @@ namespace RMDesktopUI.Library.Api
             }
         }
 
+        // Clear API Headers when user Logs Off
+        public void LogOffUser()
+        {
+            _apiClient.DefaultRequestHeaders.Clear();
+        }
+
         // Here we are trying to get logged in user's details using the token obtained by signing in
         public async Task GetLoggedInUserInfo(string token)
         {
