@@ -63,6 +63,7 @@ namespace RMDesktopUI.ViewModels
             }
         }
 
+        // To identify the product currently selected in the productList
         private ProductDisplayModel _selectedProduct;
 
         public ProductDisplayModel SelectedProduct
@@ -73,6 +74,20 @@ namespace RMDesktopUI.ViewModels
                 _selectedProduct = value;
                 NotifyOfPropertyChange(() => SelectedProduct);
                 NotifyOfPropertyChange(() => CanAddToCart);
+            }
+        }
+
+        // To identify the product currently selected in the Cart
+        private CartItemDisplayModel _selectedCartItem;
+
+        public CartItemDisplayModel SelectedCartItem
+        {
+            get { return _selectedCartItem; }
+            set 
+            { 
+                _selectedCartItem = value;
+                NotifyOfPropertyChange(() => SelectedCartItem);
+                NotifyOfPropertyChange(() => CanRemoveFromCart);
             }
         }
 
@@ -223,7 +238,6 @@ namespace RMDesktopUI.ViewModels
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
             NotifyOfPropertyChange(() => CanCheckOut);
-            NotifyOfPropertyChange(() => CanRemoveFromCart);
         }
 
         public bool CanRemoveFromCart
@@ -232,8 +246,9 @@ namespace RMDesktopUI.ViewModels
             {
                 bool output = false;
 
-                // Make sure something is selected
-                if (Cart.Count > 0)
+                // Make sure something is selected (item is selected in Cart to remove)
+                // and that the qty of selectedCartItem is greater than 0
+                if (SelectedCartItem != null && SelectedCartItem?.Product.QuantityInStock > 0)
                 {
                     output = true;
                 }
@@ -245,11 +260,23 @@ namespace RMDesktopUI.ViewModels
         // Remove From Cart button
         public void RemoveFromCart()
         {
+            // Add ItemQty of Product
+            SelectedCartItem.Product.QuantityInStock += 1;
+
+            // If Qty of the item is greater than 1, reduce qty by 1
+            if (SelectedCartItem.QuantityInCart > 1)
+            {
+                // Remove Quantity in cart by 1
+                SelectedCartItem.QuantityInCart -= 1;
+            }
+            else // Remove the item entirely
+            {
+                Cart.Remove(SelectedCartItem);
+            }
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
             NotifyOfPropertyChange(() => CanCheckOut);
-            NotifyOfPropertyChange(() => CanRemoveFromCart);
         }
 
         public bool CanCheckOut
