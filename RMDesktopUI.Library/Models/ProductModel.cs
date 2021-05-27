@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace RMDesktopUI.Library.Models
 {
+    /// <summary>
+    /// Data of products we get from the API
+    /// GET : /api/Product
+    /// </summary>
     public class ProductModel
     {
         public int Id { get; set; }

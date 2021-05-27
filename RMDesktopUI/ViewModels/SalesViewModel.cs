@@ -1,7 +1,9 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using RMDesktopUI.Library.Api;
 using RMDesktopUI.Library.Helpers;
 using RMDesktopUI.Library.Models;
+using RMDesktopUI.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,13 +18,16 @@ namespace RMDesktopUI.ViewModels
         IProductEndpoint _productEndpoint;
         ISaleEndpoint _saleEndpoint;
         IConfigHelper _configHelper;
+        IMapper _mapper;
 
         // Constructor which overloads productEndpoint,saleEndpoint and does dependancy injection
-        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint)
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, 
+            ISaleEndpoint saleEndpoint,IMapper mapper)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
             _saleEndpoint = saleEndpoint;
+            _mapper = mapper;
         }
 
         protected override async void OnViewLoaded(object view)
@@ -35,15 +40,20 @@ namespace RMDesktopUI.ViewModels
         {
             // Load Values from APIEnd point to UI when form loads
             var productList = await _productEndpoint.GetAll();
-            Products = new BindingList<ProductModel>(productList);
+
+            // Map productModel to ProductDisplayModel
+            var product = _mapper.Map<List<ProductDisplayModel>>(productList);
+
+            // var product is a mapped version of productList (mapped using Automapper instance _mapper
+            Products = new BindingList<ProductDisplayModel>(product);
         }
 
 
         // Backing Fields
-        private BindingList<ProductModel> _products;
+        private BindingList<ProductDisplayModel> _products;
 
         // Properties
-        public BindingList<ProductModel> Products
+        public BindingList<ProductDisplayModel> Products
         {
             get { return _products; }
             set 
@@ -53,9 +63,9 @@ namespace RMDesktopUI.ViewModels
             }
         }
 
-        private ProductModel _selectedProduct;
+        private ProductDisplayModel _selectedProduct;
 
-        public ProductModel SelectedProduct
+        public ProductDisplayModel SelectedProduct
         {
             get { return _selectedProduct; }
             set 
@@ -67,9 +77,9 @@ namespace RMDesktopUI.ViewModels
         }
 
 
-        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
+        private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
 
-        public BindingList<CartItemModel> Cart
+        public BindingList<CartItemDisplayModel> Cart
         {
             get { return _cart; }
             set 
@@ -184,22 +194,19 @@ namespace RMDesktopUI.ViewModels
         {
             // If Same item is added twice, we need to update same line by increment qty
             // Lambda expression to compare cart product with currently selectedproduct
-            CartItemModel existingItem = Cart.FirstOrDefault(x => x.Product == SelectedProduct);
+            CartItemDisplayModel existingItem = Cart.FirstOrDefault(x => x.Product == SelectedProduct);
             if (existingItem != null)
             {
                 // if item selected from ItemList already exists in cart, simply increament the qty in cart with ItemQuantity
                 existingItem.QuantityInCart += ItemQuantity;
-                // HACK - There should be a better way of refreshing the cart display
-                Cart.Remove(existingItem);
-                Cart.Add(existingItem);
             }
             else
             {
                 // This occurs in case a new item is added.
                 // Take the selecteditem from the list and the qty from itemQty
                 // and add this item to the cart
-                // We use the CartItemModel to Hold the current values in SalesView
-                CartItemModel item = new CartItemModel
+                // We use the CartItemDisplayModel to Hold the current values in SalesView
+                CartItemDisplayModel item = new CartItemDisplayModel
                 {
                     Product = SelectedProduct,
                     QuantityInCart = ItemQuantity
