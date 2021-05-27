@@ -13,8 +13,8 @@ namespace RMDesktopUI.ViewModels
     {
         // property with _ means that it is a backing field meaning
         // its sole purpose is to supply & hold values for this public property
-        private string _userName;
-        private string _password;
+        private string _userName = "adithyavj@gmail.com";
+        private string _password = "Pwd12345.";
         // instance of apihelper interface
         private IAPIHelper _apiHelper;
         // instance of event aggergator

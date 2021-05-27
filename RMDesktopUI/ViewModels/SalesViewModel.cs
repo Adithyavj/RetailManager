@@ -14,13 +14,15 @@ namespace RMDesktopUI.ViewModels
     public class SalesViewModel : Screen
     {
         IProductEndpoint _productEndpoint;
+        ISaleEndpoint _saleEndpoint;
         IConfigHelper _configHelper;
 
-        // Constructor which overloads productEndpoint and does dependancy injection
-        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
+        // Constructor which overloads productEndpoint,saleEndpoint and does dependancy injection
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
+            _saleEndpoint = saleEndpoint;
         }
 
         protected override async void OnViewLoaded(object view)
@@ -213,6 +215,8 @@ namespace RMDesktopUI.ViewModels
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
+            NotifyOfPropertyChange(() => CanRemoveFromCart);
         }
 
         public bool CanRemoveFromCart
@@ -222,7 +226,11 @@ namespace RMDesktopUI.ViewModels
                 bool output = false;
 
                 // Make sure something is selected
-
+                if (Cart.Count > 0)
+                {
+                    output = true;
+                }
+                // Now remove from cart button will be enabled
                 return output;
             }
         }
@@ -233,6 +241,8 @@ namespace RMDesktopUI.ViewModels
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
+            NotifyOfPropertyChange(() => CanRemoveFromCart);
         }
 
         public bool CanCheckOut
@@ -242,14 +252,33 @@ namespace RMDesktopUI.ViewModels
                 bool output = false;
 
                 // Make sure something is there in the cart
-
+                if (Cart.Count > 0)
+                {
+                    output = true;
+                }
+                // if output is true the button will be enabled
                 return output;
             }
         }
 
         // Checkout button
-        public void CheckOut()
+        public async Task CheckOut()
         {
+            // Create a SaleModel and Post to API
+            SaleModel sale = new SaleModel();
+
+            // add items from cart to SaleModel
+            foreach (var item in Cart)
+            {
+                sale.SaleDetails.Add(new SaleDetailModel
+                {
+                    ProductId = item.Product.Id,
+                    Quantity = item.QuantityInCart
+                });
+            }
+
+            // Now post this data to API
+            await _saleEndpoint.PostSale(sale);
 
         }
 
