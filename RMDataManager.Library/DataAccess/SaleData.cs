@@ -83,6 +83,8 @@ namespace RMDataManager.Library.DataAccess
                     // In case the whole thing completes without any exception, it commits the transaction
                     // because we wrote committransaction in the Dispose() no need to call it here
                     // it will be automatically done
+                    // but to get an idea of how the transaction works we do it here
+                    sql.CommitTransaction();
                 }
                 catch
                 {

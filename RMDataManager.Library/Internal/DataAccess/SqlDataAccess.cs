@@ -61,6 +61,8 @@ namespace RMDataManager.Library.Internal.DataAccess
             _connection.Open();
 
             _transaction = _connection.BeginTransaction();
+
+            isClosed = false;
         }
 
         // Load Data in Transaction , we pass transaction in Query
@@ -78,11 +80,15 @@ namespace RMDataManager.Library.Internal.DataAccess
                 commandType: CommandType.StoredProcedure, transaction: _transaction);
         }
 
+        public bool isClosed = false;
+
         // Commits transactions upon successful completion
         public void CommitTransaction()
         {
             _transaction?.Commit();
             _connection?.Close();
+
+            isClosed = true;
         }
 
         // Rollbacks all transactions as error occured
@@ -90,11 +96,26 @@ namespace RMDataManager.Library.Internal.DataAccess
         {
             _transaction?.Rollback();
             _connection?.Close();
+
+            isClosed = true;
         }
 
         public void Dispose()
         {
-            CommitTransaction();
+            if (isClosed == false)
+            {
+                try
+                {
+                    CommitTransaction();
+                }
+                catch
+                {
+                    // TODO - Log this issue
+                }
+            }
+
+            _transaction = null;
+            _connection = null;
         }
         // Open connection/start transaction method
         // load using the transaction
