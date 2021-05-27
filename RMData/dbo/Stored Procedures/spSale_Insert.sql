@@ -12,6 +12,7 @@ BEGIN
 	insert into dbo.Sale(CashierId, SaleDate, SubTotal, Tax, Total)
 	values (@CashierId, @SaleDate, @SubTotal, @Tax, @Total)
 
-	select @Id = @@IDENTITY;
+	-- Gets last inserted id by this procedure
+	select @Id = SCOPE_IDENTITY();
 
 END
