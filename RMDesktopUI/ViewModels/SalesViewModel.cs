@@ -76,6 +76,20 @@ namespace RMDesktopUI.ViewModels
                 NotifyOfPropertyChange(() => CanAddToCart);
             }
         }
+    
+        // Method to Reset the Page upon checkout
+        private async Task ResetSalesViewModel()
+        {
+            Cart = new BindingList<CartItemDisplayModel>();
+            // TODO - Add clearing the selectedCartItem if it does not do it itself
+            await LoadProducts();
+
+            NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
+        }
+
 
         // To identify the product currently selected in the Cart
         private CartItemDisplayModel _selectedCartItem;
@@ -248,7 +262,7 @@ namespace RMDesktopUI.ViewModels
 
                 // Make sure something is selected (item is selected in Cart to remove)
                 // and that the qty of selectedCartItem is greater than 0
-                if (SelectedCartItem != null && SelectedCartItem?.Product.QuantityInStock > 0)
+                if (SelectedCartItem != null && SelectedCartItem?.QuantityInCart > 0)
                 {
                     output = true;
                 }
@@ -277,6 +291,7 @@ namespace RMDesktopUI.ViewModels
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
             NotifyOfPropertyChange(() => CanCheckOut);
+            NotifyOfPropertyChange(() => CanAddToCart);
         }
 
         public bool CanCheckOut
@@ -313,6 +328,9 @@ namespace RMDesktopUI.ViewModels
 
             // Now post this data to API
             await _saleEndpoint.PostSale(sale);
+
+            // Reset Cart and Product List
+            await ResetSalesViewModel();
 
         }
 

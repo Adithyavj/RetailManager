@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using RMDesktopUI.EventModels;
+using RMDesktopUI.Library.Models;
 
 namespace RMDesktopUI.ViewModels
 {
@@ -12,13 +13,14 @@ namespace RMDesktopUI.ViewModels
     {
         private SalesViewModel _salesVM;
         private IEventAggregator _events;
+        private ILoggedInUserModel _user;
 
-        public ShellViewModel(IEventAggregator events, SalesViewModel salesVM)
+        public ShellViewModel(IEventAggregator events, SalesViewModel salesVM, ILoggedInUserModel user)
         {
             // Constructor dependancy injection
             _events = events;
             _salesVM = salesVM;
-
+            _user = user;
             // Subscribes the shellviewModel to listen to the events
             _events.Subscribe(this);
 
@@ -39,6 +41,41 @@ namespace RMDesktopUI.ViewModels
             // we can do this by creating a new instance.
             // This is always done in the constructor of this class.
             // it always creates a new instance
+
+
+            NotifyOfPropertyChange(() => IsLoggedIn);
         }
+
+        // To close our WPF application
+        public void ExitApplication()
+        {
+            TryClose();
+        }
+
+        // Logout from our applcation
+        public void LogOut()
+        {
+            // Close out everything 
+            _user.LogOffUser();
+            // Activate loginVM
+            ActivateItem(IoC.Get<LoginViewModel>());
+            NotifyOfPropertyChange(() => IsLoggedIn);
+        }
+
+        public bool IsLoggedIn 
+        {
+            get
+            {
+                bool output = false;
+
+                if (string.IsNullOrWhiteSpace(_user.Token) == false)
+                {
+                    output = true;
+                }
+
+                return output;
+            }
+        }
+
     }
 }
