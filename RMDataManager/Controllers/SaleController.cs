@@ -24,5 +24,14 @@ namespace RMDataManager.Controllers
             string userId = RequestContext.Principal.Identity.GetUserId();
             data.SaveSale(sale, userId);
         }
+
+        // GET: api/Sale/GetSalesReport
+        // get data from db
+        [Route("GetSalesReport")]
+        public List<SaleReportModel> GetSalesReport()
+        {
+            SaleData data = new SaleData();
+            return data.GetSaleReport();
+        }
     }
 }
