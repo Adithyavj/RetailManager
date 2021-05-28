@@ -7,9 +7,11 @@ using RMDesktopUI.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RMDesktopUI.ViewModels
 {
@@ -19,21 +21,50 @@ namespace RMDesktopUI.ViewModels
         ISaleEndpoint _saleEndpoint;
         IConfigHelper _configHelper;
         IMapper _mapper;
+        private readonly StatusInfoViewModel _status;
+        private readonly IWindowManager _window;
 
         // Constructor which overloads productEndpoint,saleEndpoint and does dependancy injection
-        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, 
-            ISaleEndpoint saleEndpoint,IMapper mapper)
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper,
+            ISaleEndpoint saleEndpoint, IMapper mapper, StatusInfoViewModel status, IWindowManager window)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
             _saleEndpoint = saleEndpoint;
             _mapper = mapper;
+            _status = status;
+            _window = window;
         }
 
         protected override async void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
-            await LoadProducts();
+            try
+            {
+                await LoadProducts();
+            }
+            catch (Exception ex)
+            {
+                // settings for message box
+                dynamic settings = new ExpandoObject();
+                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                settings.ResizeMode = ResizeMode.NoResize;
+                settings.Title = "System Error";
+
+                if (ex.Message == "Unauthorized")
+                {
+                    // If user is not authorized show a popup message
+                    _status.UpdateMessage("Unauthorized Access", "You do not have permission to interact with the SalesForm");
+                    _window.ShowDialog(_status, null, settings);
+                }
+                else
+                {
+                    _status.UpdateMessage("Fatal Exception", ex.Message);
+                    _window.ShowDialog(_status, null, settings);
+                }
+                // close the sales form
+                TryClose();
+            }
         }
 
         private async Task LoadProducts()
