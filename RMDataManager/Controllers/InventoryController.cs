@@ -14,6 +14,7 @@ namespace RMDataManager.Controllers
     {
         // POST api/Inventory
         // data posted from MVC to API (purchase/inventory data)
+        [Authorize(Roles = "Admin")]
         public void Post(InventoryModel item)
         {
             InventoryData data = new InventoryData();
@@ -22,6 +23,7 @@ namespace RMDataManager.Controllers
 
         // GET api/Inventory
         // get inventory data from db
+        [Authorize(Roles = "Admin,Manager")]
         public List<InventoryModel> Get()
         {
             InventoryData data = new InventoryData();

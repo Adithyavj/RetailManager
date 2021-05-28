@@ -10,7 +10,7 @@ using System.Web.Http;
 namespace RMDataManager.Controllers
 {
     // This attribute is added to check if the user is authorized..
-    [Authorize]
+    [Authorize(Roles = "Cashier")] // Only cashier can do this ie, access sales page
     public class ProductController : ApiController
     {
         // GET api/Product

@@ -16,6 +16,8 @@ namespace RMDataManager.Controllers
     {
         // POST api/Sale
         // data posted from WPF to API (sales data)
+        [Authorize(Roles = "Cashier")]
+        // since role is specified only person with role Cashier can do this
         public void Post(SaleModel sale) // Incoming SaleModel has data from Cart in WPF
         {
             SaleData data = new SaleData();
@@ -27,9 +29,16 @@ namespace RMDataManager.Controllers
 
         // GET: api/Sale/GetSalesReport
         // get data from db
+        [Authorize(Roles = "Admin,Manager")] // only users with role admin/manager can do this
         [Route("GetSalesReport")]
         public List<SaleReportModel> GetSalesReport()
         {
+            //// PseudoCode:
+            //// Different levels of report can be visible only by admin
+            //if (RequestContext.Principal.IsInRole("Admin"))
+            //{
+            //    // Do admin stuff...
+            //}
             SaleData data = new SaleData();
             return data.GetSaleReport();
         }
