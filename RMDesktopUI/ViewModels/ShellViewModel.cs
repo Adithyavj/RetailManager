@@ -83,5 +83,11 @@ namespace RMDesktopUI.ViewModels
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
 
+        public void UserManagement()
+        {
+            // Activate UserVM
+            ActivateItem(IoC.Get<UserDisplayViewModel>());
+        }
+
     }
 }
