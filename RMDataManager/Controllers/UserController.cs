@@ -64,5 +64,61 @@ namespace RMDataManager.Controllers
                 return output;
             }
         }
+
+        // GET api/User/Admin/GetAllRoles
+        // to get all roles in EFDB
+        [Authorize(Roles ="Admin")]
+        [HttpGet]
+        [Route("api/User/Admin/GetAllRoles")]
+        public Dictionary<string,string> GetAllRoles()
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                // We convert the returned roles to a dictionary (key,value)
+                var roles = context.Roles.ToDictionary(x => x.Id, x => x.Name);
+
+                return roles;
+            }
+        }
+
+
+        // POST api/User/Admin/AddRole
+        // insert new role to db
+        // we can only pass in a single parameter for post
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [Route("api/User/Admin/AddRole")]
+        public void AddRole(UserRolePairModel pairing)
+        {
+            // We need to get the users from EFData DB (Entity Framework created DB)   
+            using (var context = new ApplicationDbContext())
+            {
+                var userStore = new UserStore<ApplicationUser>(context);
+                var userManager = new UserManager<ApplicationUser>(userStore);
+
+                // to insert a new role
+                userManager.AddToRole(pairing.UserId, pairing.RoleName);
+            }
+        }
+
+        // DELETE api/User/Admin/GetAllRoles
+        // delete a role from db
+        // we can only pass in a single parameter for post
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [Route("api/User/Admin/RemoveRole")]
+        public void RemoveRole(UserRolePairModel pairing)
+        {
+            // We need to get the users from EFData DB (Entity Framework created DB)   
+            using (var context = new ApplicationDbContext())
+            {
+                var userStore = new UserStore<ApplicationUser>(context);
+                var userManager = new UserManager<ApplicationUser>(userStore);
+
+                // to remove a role
+                userManager.RemoveFromRole(pairing.UserId, pairing.RoleName);
+            }
+        }
+
     }
 }
