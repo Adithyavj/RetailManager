@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using RMDataManager.Library.DataAccess;
 using RMDataManager.Library.Models;
 using System;
@@ -17,13 +18,19 @@ namespace RMApi.Controllers
     [ApiController]
     public class SaleController : ControllerBase
     {
+        private readonly IConfiguration _config;
+
+        public SaleController(IConfiguration config)
+        {
+            _config = config;
+        }
         // POST api/Sale
         // data posted from WPF to API (sales data)
         [Authorize(Roles = "Cashier")]
         // since role is specified only person with role Cashier can do this
         public void Post(SaleModel sale) // Incoming SaleModel has data from Cart in WPF
         {
-            SaleData data = new SaleData();
+            SaleData data = new SaleData(_config);
 
             // get current userid
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -42,7 +49,7 @@ namespace RMApi.Controllers
             //{
             //    // Do admin stuff...
             //}
-            SaleData data = new SaleData();
+            SaleData data = new SaleData(_config);
             return data.GetSaleReport();
         }
     }
