@@ -27,6 +27,7 @@ namespace RMApi.Controllers
         // POST api/Sale
         // data posted from WPF to API (sales data)
         [Authorize(Roles = "Cashier")]
+        [HttpPost]
         // since role is specified only person with role Cashier can do this
         public void Post(SaleModel sale) // Incoming SaleModel has data from Cart in WPF
         {
@@ -41,6 +42,7 @@ namespace RMApi.Controllers
         // get data from db
         [Authorize(Roles = "Admin,Manager")] // only users with role admin/manager can do this
         [Route("GetSalesReport")]
+        [HttpGet]
         public List<SaleReportModel> GetSalesReport()
         {
             //// PseudoCode:

@@ -25,6 +25,7 @@ namespace RMApi.Controllers
         }
         // GET api/Product
         // a model to get all products
+        [HttpGet]
         public List<ProductModel> Get()
         {
             ProductData data = new ProductData(_config);

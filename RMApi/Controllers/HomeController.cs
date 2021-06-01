@@ -31,7 +31,7 @@ namespace RMApi.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Privacy()
+        public IActionResult Privacy() // old - public async Task<IActionResult> Privacy()
         {
             #region Add Default values to DB
             //// Code to create UserRoles
