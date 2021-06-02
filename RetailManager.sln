@@ -3,15 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMDataManager", "RMDataManager\RMDataManager.csproj", "{815FD0CC-E961-491C-A2A9-F92E0BEC7851}"
-EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "RMData", "RMData\RMData.sqlproj", "{915B4578-8D9E-4F12-B794-252E6F130D02}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMDesktopUI", "RMDesktopUI\RMDesktopUI.csproj", "{EE9F2D09-EECF-476C-B5F8-7035012CBC46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMDataManager.Library", "RMDataManager.Library\RMDataManager.Library.csproj", "{C1C482C3-4463-4377-A1AF-742016E86C39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMDataManager.Library", "RMDataManager.Library\RMDataManager.Library.csproj", "{C1C482C3-4463-4377-A1AF-742016E86C39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMDesktopUI.Library", "RMDesktopUI.Library\RMDesktopUI.Library.csproj", "{40FF542A-1BAA-49C2-ABB5-46A5CDBF39F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMDesktopUI.Library", "RMDesktopUI.Library\RMDesktopUI.Library.csproj", "{40FF542A-1BAA-49C2-ABB5-46A5CDBF39F1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{3EE1DCE3-A256-497A-9E66-70218F69AF71}"
 EndProject
@@ -19,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{C3CD364A-C40
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WPF", "WPF", "{565B9A0F-66BC-4783-858D-4D2C7D8862A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMApi", "RMApi\RMApi.csproj", "{21601F23-D600-484F-B113-2246373BC297}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMApi", "RMApi\RMApi.csproj", "{21601F23-D600-484F-B113-2246373BC297}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,10 +25,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{815FD0CC-E961-491C-A2A9-F92E0BEC7851}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{815FD0CC-E961-491C-A2A9-F92E0BEC7851}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{815FD0CC-E961-491C-A2A9-F92E0BEC7851}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{815FD0CC-E961-491C-A2A9-F92E0BEC7851}.Release|Any CPU.Build.0 = Release|Any CPU
 		{915B4578-8D9E-4F12-B794-252E6F130D02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{915B4578-8D9E-4F12-B794-252E6F130D02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{915B4578-8D9E-4F12-B794-252E6F130D02}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
@@ -58,7 +52,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{815FD0CC-E961-491C-A2A9-F92E0BEC7851} = {C3CD364A-C40B-4525-BEFD-9611118BF02B}
 		{915B4578-8D9E-4F12-B794-252E6F130D02} = {3EE1DCE3-A256-497A-9E66-70218F69AF71}
 		{EE9F2D09-EECF-476C-B5F8-7035012CBC46} = {565B9A0F-66BC-4783-858D-4D2C7D8862A7}
 		{C1C482C3-4463-4377-A1AF-742016E86C39} = {C3CD364A-C40B-4525-BEFD-9611118BF02B}
