@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RMDesktopUI.ViewModels
@@ -100,7 +101,7 @@ namespace RMDesktopUI.ViewModels
                 // This lets everyone know someone has logged in
                 // all listeners on the UI thread will know that this event fires
                 // We created a Class (EventModel) for this just to know the event occured. The eventModel won't have any code
-                _events.PublishOnUIThread(new LogOnEvent()); //broadcast.... LogOnEvent Happends
+                await _events.PublishOnUIThreadAsync(new LogOnEvent(),new CancellationToken()); //broadcast.... LogOnEvent Happends
 
 
             }

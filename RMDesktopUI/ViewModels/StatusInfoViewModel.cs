@@ -24,7 +24,7 @@ namespace RMDesktopUI.ViewModels
         public void Close()
         {
             // Closes this form
-            TryClose();
+            TryCloseAsync();
         }
 
     }

@@ -55,15 +55,15 @@ namespace RMDesktopUI.ViewModels
                 {
                     // If user is not authorized show a popup message
                     _status.UpdateMessage("Unauthorized Access", "You do not have permission to interact with the SalesForm");
-                    _window.ShowDialog(_status, null, settings);
+                    await _window.ShowDialogAsync(_status, null, settings);
                 }
                 else
                 {
                     _status.UpdateMessage("Fatal Exception", ex.Message);
-                    _window.ShowDialog(_status, null, settings);
+                    await _window.ShowDialogAsync(_status, null, settings);
                 }
                 // close the sales form
-                TryClose();
+                TryCloseAsync();
             }
         }
 
