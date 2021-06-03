@@ -13,16 +13,14 @@ namespace RMDesktopUI.ViewModels
 {
     public class ShellViewModel : Conductor<object>, IHandle<LogOnEvent>
     {
-        private SalesViewModel _salesVM;
         private IEventAggregator _events;
         private ILoggedInUserModel _user;
         private IAPIHelper _apiHelper;
 
-        public ShellViewModel(IEventAggregator events, SalesViewModel salesVM, ILoggedInUserModel user, IAPIHelper apiHelper)
+        public ShellViewModel(IEventAggregator events, ILoggedInUserModel user, IAPIHelper apiHelper)
         {
             // Constructor dependancy injection
             _events = events;
-            _salesVM = salesVM;
             _user = user;
             _apiHelper = apiHelper;
             // Subscribes the shellviewModel to listen to the events
@@ -72,30 +70,14 @@ namespace RMDesktopUI.ViewModels
             await ActivateItemAsync(IoC.Get<UserDisplayViewModel>(),new CancellationToken());
         }
 
-        //// The ShellViewModel Listens for the LogOnEvent fired in the LoginViewModel.....
-        //// And the IHandle handles what to do in case this event is fired
-        //public void Handle(LogOnEvent message)
-        //{
-        //    // Close LogInForm and Open SalesForm
-
-        //    // To activate the Sales Screen
-        //    ActivateItem(_salesVM);
-        //    // In SimpleContainer system only single container can be open at all times, so on activating
-        //    // the SalesVM, LoginVM will close. But we need to somehow destory the instance that was created.
-        //    // we can do this by creating a new instance.
-        //    // This is always done in the constructor of this class.
-        //    // it always creates a new instance
-
-
-        //    NotifyOfPropertyChange(() => IsLoggedIn);
-        //}
-
+        // The ShellViewModel Listens for the LogOnEvent fired in the LoginViewModel.....
+        // And the IHandle handles what to do in case this event is fired
         public async Task HandleAsync(LogOnEvent message, CancellationToken cancellationToken)
         {
             // Close LogInForm and Open SalesForm
 
-            // To activate the Sales Screen
-            await ActivateItemAsync(_salesVM, cancellationToken);
+            // To activate the Sales Screen (we activate a new instance)
+            await ActivateItemAsync(IoC.Get<SalesViewModel>(), cancellationToken);
             // In SimpleContainer system only single container can be open at all times, so on activating
             // the SalesVM, LoginVM will close. But we need to somehow destory the instance that was created.
             // we can do this by creating a new instance.
