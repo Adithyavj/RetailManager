@@ -9,27 +9,28 @@ using System.Threading.Tasks;
 
 namespace RMDataManager.Library.DataAccess
 {
-    public class InventoryData
+    public class InventoryData : IInventoryData
     {
         private readonly IConfiguration _config;
-        public InventoryData(IConfiguration config)
+        private readonly ISqlDataAccess _sql;
+
+        public InventoryData(IConfiguration config,ISqlDataAccess sql)
         {
             _config = config;
+            _sql = sql;
         }
 
         // Select spInventory_GetAll and get store data to InventoryModel
         public List<InventoryModel> GetInventory()
         {
-            SqlDataAccess sql = new SqlDataAccess(_config);
-            var output = sql.LoadData<InventoryModel, dynamic>("dbo.spInventory_GetAll", new { }, "RMData");
+            var output = _sql.LoadData<InventoryModel, dynamic>("dbo.spInventory_GetAll", new { }, "RMData");
             return output;
         }
 
         // Insert Values to inventoryTable by calling spInventory_Insert and passing values through InventoryModel
         public void SaveInventoryRecord(InventoryModel item)
         {
-            SqlDataAccess sql = new SqlDataAccess(_config);
-            sql.SaveData("dbo.spInventory_Insert", item, "RMData");
+            _sql.SaveData("dbo.spInventory_Insert", item, "RMData");
         }
     }
 }

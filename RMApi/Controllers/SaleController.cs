@@ -18,11 +18,11 @@ namespace RMApi.Controllers
     [ApiController]
     public class SaleController : ControllerBase
     {
-        private readonly IConfiguration _config;
+        private readonly ISaleData _saleData;
 
-        public SaleController(IConfiguration config)
+        public SaleController(ISaleData saleData)
         {
-            _config = config;
+            _saleData = saleData;
         }
         // POST api/Sale
         // data posted from WPF to API (sales data)
@@ -31,11 +31,9 @@ namespace RMApi.Controllers
         // since role is specified only person with role Cashier can do this
         public void Post(SaleModel sale) // Incoming SaleModel has data from Cart in WPF
         {
-            SaleData data = new SaleData(_config);
-
             // get current userid
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            data.SaveSale(sale, userId);
+            _saleData.SaveSale(sale, userId);
         }
 
         // GET: api/Sale/GetSalesReport
@@ -51,8 +49,7 @@ namespace RMApi.Controllers
             //{
             //    // Do admin stuff...
             //}
-            SaleData data = new SaleData(_config);
-            return data.GetSaleReport();
+            return _saleData.GetSaleReport();
         }
     }
 }

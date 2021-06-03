@@ -9,19 +9,23 @@ using System.Threading.Tasks;
 
 namespace RMDataManager.Library.DataAccess
 {
-    public class SaleData
+    public class SaleData : ISaleData
     {
-        private readonly IConfiguration _config;
-        public SaleData(IConfiguration config)
+        private readonly IProductData _productData;
+        private readonly ISqlDataAccess _sql;
+
+        public SaleData(IProductData productData, ISqlDataAccess sql)
         {
-            _config = config;
+            _productData = productData;
+            _sql = sql;
         }
+
         public void SaveSale(SaleModel saleInfo, string cashierId)
         {
             // TODO: Make this SOLID/DRY/Better
             // Start filling in the sale detail Models that we will save to DB
             List<SaleDetailDBModel> details = new List<SaleDetailDBModel>();
-            ProductData products = new ProductData(_config);
+
             var taxRate = ConfigHelper.GetTaxRate() / 100;
 
             foreach (var item in saleInfo.SaleDetails)
@@ -35,7 +39,7 @@ namespace RMDataManager.Library.DataAccess
 
                 // fill in other details like purchaseprice,tax etc
                 // Get information about product using its id
-                var productInfo = products.GetProductById(detail.ProductId);
+                var productInfo = _productData.GetProductById(detail.ProductId);
                 if (productInfo == null)
                 {
                     throw new Exception($"The Product Id of {detail.ProductId} could not be found in the database.");
@@ -65,48 +69,46 @@ namespace RMDataManager.Library.DataAccess
 
             // Complete whole insertion to Sale, SaleDetail and lookup SaleId in a single transaction
             // using sql transaction in C#
-            using (SqlDataAccess sql = new SqlDataAccess(_config))
+
+            // We replace using statement with Dependency injection as it will handle the Idisposable 
+            // and dispose the connection after use
+            try
             {
-                try
+                // Start transaction
+                _sql.StartTransaction("RMData");
+
+                // save the sale model
+                _sql.SaveDataInTransaction("dbo.spSale_Insert", sale);
+
+                // get the ID from db using Sale_Lookup sp
+                sale.Id = _sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_Lookup", new { sale.CashierId, sale.SaleDate }).FirstOrDefault();
+
+                // Finish filling in the sale Detail Models with the id we now obtained and insert to SaleDetail table one by one
+                foreach (var item in details)
                 {
-                    // Start transaction
-                    sql.StartTransaction("RMData");
-
-                    // save the sale model
-                    sql.SaveDataInTransaction("dbo.spSale_Insert", sale);
-
-                    // get the ID from db using Sale_Lookup sp
-                    sale.Id = sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_Lookup", new { sale.CashierId, sale.SaleDate }).FirstOrDefault();
-
-                    // Finish filling in the sale Detail Models with the id we now obtained and insert to SaleDetail table one by one
-                    foreach (var item in details)
-                    {
-                        item.SaleId = sale.Id;
-                        // save the sales Detail Model to DB one by one
-                        sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
-                    }
-
-                    // In case the whole thing completes without any exception, it commits the transaction
-                    // because we wrote committransaction in the Dispose() no need to call it here
-                    // it will be automatically done
-                    // but to get an idea of how the transaction works we do it here
-                    sql.CommitTransaction();
+                    item.SaleId = sale.Id;
+                    // save the sales Detail Model to DB one by one
+                    _sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
                 }
-                catch
-                {
-                    // If any error occurs roll back the whole transaction
-                    sql.RollBackTransaction();
-                    throw;
-                }
+
+                // In case the whole thing completes without any exception, it commits the transaction
+                // because we wrote committransaction in the Dispose() no need to call it here
+                // it will be automatically done
+                // but to get an idea of how the transaction works we do it here
+                _sql.CommitTransaction();
+            }
+            catch
+            {
+                // If any error occurs roll back the whole transaction
+                _sql.RollBackTransaction();
+                throw;
             }
         }
 
         // Call SalesReport from db (Access sales report)
         public List<SaleReportModel> GetSaleReport()
         {
-            SqlDataAccess sql = new SqlDataAccess(_config);
-
-            var output = sql.LoadData<SaleReportModel, dynamic>("dbo.spSale_SaleReport", new { }, "RMData");
+            var output = _sql.LoadData<SaleReportModel, dynamic>("dbo.spSale_SaleReport", new { }, "RMData");
 
             return output;
         }

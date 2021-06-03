@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using RMDataManager.Library.DataAccess;
+using RMDataManager.Library.Internal.DataAccess;
 
 namespace RMApi
 {
@@ -38,6 +40,18 @@ namespace RMApi
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            // ------Personal Services------
+            // 1. Add Dependancy Injection
+            services.AddTransient<IInventoryData, InventoryData>(); // whenever we ask for IInventory data in a class, this code works
+                                                                    // and creates a new instance of InventoryData for us
+            services.AddTransient<ISqlDataAccess, SqlDataAccess>(); //Transient means a new instance is created whenever it is asked
+                                                                    // Singleton means only a single instance will be created and it will be used over and over again
+            services.AddTransient<IProductData, ProductData>();
+            services.AddTransient<ISaleData, SaleData>();
+            services.AddTransient<IUserData, UserData>();
+
+
 
             //Add Authentication to services
             // Start Add JWTAuth (Taking in the token and making sure you're valid)

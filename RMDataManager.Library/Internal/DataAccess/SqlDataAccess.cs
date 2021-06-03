@@ -15,7 +15,7 @@ namespace RMDataManager.Library.Internal.DataAccess
     /// <summary>
     /// An Internal Class containing methods to load,save data from Database server
     /// </summary>
-    internal class SqlDataAccess : IDisposable
+    public class SqlDataAccess : IDisposable, ISqlDataAccess
     {
         private readonly IConfiguration _config;
         public SqlDataAccess(IConfiguration config)
@@ -88,7 +88,6 @@ namespace RMDataManager.Library.Internal.DataAccess
         }
 
         public bool isClosed = false;
-        private readonly IConfiguration config;
 
         // Commits transactions upon successful completion
         public void CommitTransaction()
